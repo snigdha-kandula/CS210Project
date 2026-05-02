@@ -21,23 +21,3 @@ reviews_df = pd.read_json(
 
 print("Number of reviews:", len(reviews_df))
 print(reviews_df.head())
-
-merged = reviews_df.merge(
-    restaurants[["business_id", "name", "city", "state"]],
-    on="business_id",
-    how="inner"
-)
-
-print("Merged rows:", len(merged))
-print(merged.head())
-
-merged["date"] = pd.to_datetime(merged["date"]).dt.date
-
-daily_demand = (
-    merged.groupby(["business_id", "name", "city", "state", "date"])
-    .size()
-    .reset_index(name="daily_review_count")
-)
-
-print(daily_demand.head())
-print("Daily demand rows:", len(daily_demand))
