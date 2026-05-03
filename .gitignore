@@ -1,0 +1,10 @@
+yelp_academic_dataset_business.json
+yelp_academic_dataset_review.json
+
+venv/
+.venv/
+
+.vscode/
+
+__pycache__/
+*.pyc
