@@ -1,15 +1,30 @@
 import pandas as pd
+import json
 
-#reading data from public Yelp dataset
-business_df = pd.read_json("yelp_academic_dataset_business.json", lines=True)
+# reading data from public Yelp dataset
+# load JSONL defensively to tolerate occasional malformed lines.
+business_rows = []
+bad_business_lines = 0
+with open("yelp_academic_dataset_business.json", "rb") as f:
+    for raw_line in f:
+        line = raw_line.decode("utf-8", errors="replace").strip() 
+        if not line:
+            continue
+        try:
+            business_rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            bad_business_lines += 1
+
+business_df = pd.DataFrame(business_rows)
+print("Skipped malformed business lines:", bad_business_lines)
 
 ##narrowing to just restaurants
 restaurants = business_df[business_df["categories"].str.contains("Restaurants", na=False)]
 
 print("Number of restaurants:", len(restaurants))
-#print(restaurants[["state"]].value_counts().head(20)) - used to find state with most restaurants
+#print(restaurants[["city", state"]].value_counts().head(20)) - used to find city, state with most restaurants
 
-#narrowing to Philadelphia, PA restaurants because weather data trends would be easier to gauge
+#narrowing to Philadelphia, PA restaurants because it has the most restaurants and weather data trends would be easier to gauge for one city
 pa_restaurants = restaurants[(restaurants["city"] == "Philadelphia") & (restaurants["state"] == "PA")].copy()
 
 #cleaning
@@ -31,6 +46,7 @@ pa_reviews = reviews_df[reviews_df["business_id"].isin(pa_restaurants["business_
 
 #cleaning
 pa_reviews = pa_reviews.dropna(subset=["review_id", "business_id", "date"])
+#making all dates the same format
 pa_reviews["date"] = pd.to_datetime(pa_reviews["date"]).dt.date
 pa_reviews = pa_reviews[["review_id", "business_id", "user_id", "stars", "date", "useful", "funny", "cool"]]
 
@@ -41,7 +57,7 @@ print(pa_reviews.head())
 print("Date range:", pa_reviews["date"].min(), "to", pa_reviews["date"].max())
 print("Reviews per year:\n", pd.to_datetime(pa_reviews["date"]).dt.year.value_counts().sort_index())
 
-#filter to after yelp gaining popularity and before covid
+#filter to after yelp gaining popularity and before covid (last review in 2022, but 2020-2022 were affected by covid)
 pa_reviews = pa_reviews[(pd.to_datetime(pa_reviews["date"]).dt.year >= 2013) & (pd.to_datetime(pa_reviews["date"]).dt.year <= 2019)]
 print("Reviews after year filter:", len(pa_reviews))
 
