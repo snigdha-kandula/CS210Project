@@ -11,6 +11,7 @@ To run this project:
 2. Place the following files in the same directory as main.py, ml.py, schema.sql:
    - yelp_academic_dataset_business.json
    - yelp_academic_dataset_review.json
+   - open-meteo-philadelphia-weather.csv
 3. Run "python3 main.py" to generate the daily_demand.csv, filtered_pa_weather.csv, restaurants.csv, reviews.csv
 4. Run "sqlite3 cs210_restaurant_demand.db < schema.sql" to generate the features.csv file
 5. Run python3 ml.py to see the findings from the three models and generate ml_results.png, ml_importance_random_forest.png, & ml_importance_xgboost.png
