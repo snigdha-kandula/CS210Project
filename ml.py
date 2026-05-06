@@ -252,7 +252,68 @@ for model, name, out in (
     fig.savefig(out, dpi=100)
     plt.close(fig)
 
-print(
-    "Saved: ml_model_linear.png, ml_model_random_forest.png, ml_model_xgboost.png, "
-    "ml_importance_linear_coefs.png, ml_importance_random_forest.png, ml_importance_xgboost.png"
-)
+print("Saved importance plots.")
+
+
+#time series: avg actual vs predicted per week across 2019 (xgboost)
+ts = weekly_clean[test_mask].copy()
+ts["predicted"] = y_pred_xgb
+ts_agg = ts.groupby("week")[["weekly_review_count", "predicted"]].mean().reset_index()
+fig, ax = plt.subplots(figsize=(12, 5))
+ax.plot(ts_agg["week"], ts_agg["weekly_review_count"], label="Actual", color="steelblue")
+ax.plot(ts_agg["week"], ts_agg["predicted"], label="Predicted", color="green", linestyle="--")
+ax.set_xlabel("Week of Year (2019)")
+ax.set_ylabel("Avg Weekly Reviews")
+ax.set_title("Actual vs Predicted Weekly Reviews Over Time (2019): XGBoost")
+ax.legend()
+ax.grid(True, alpha=0.3)
+fig.tight_layout()
+fig.savefig("plot_timeseries_2019.png", dpi=100)
+plt.close(fig)
+
+print("Saved: plot_residuals_xgb.png, plot_timeseries_2019.png")
+
+#actual vs predicted for linear regression and random forest
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+for ax, y_pred, name, color in [
+    (axes[0], y_pred_lr, "Linear Regression", "blue"),
+    (axes[1], y_pred_rf, "Random Forest",     "orange"),
+]:
+    r2 = r2_score(y_test, y_pred)
+    ax.scatter(y_test, y_pred, alpha=0.5, color=color)
+    ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+    ax.set_xlabel("Actual Weekly Review Count")
+    ax.set_ylabel("Predicted Weekly Review Count")
+    ax.set_title(f"{name}: Actual vs Predicted (R² = {r2:.3f})")
+    ax.grid(True, alpha=0.3)
+
+fig.tight_layout()
+fig.savefig("plot_actual_vs_predicted_lr_rf.png", dpi=100)
+plt.close(fig)
+
+print("Saved: plot_actual_vs_predicted_lr_rf.png")
+
+#time series comparison for linear regression and random forest
+fig, axes = plt.subplots(2, 1, figsize=(12, 10))
+
+for ax, y_pred, name, color in [
+    (axes[0], y_pred_lr, "Linear Regression", "blue"),
+    (axes[1], y_pred_rf, "Random Forest", "orange"),
+]:
+    ts2 = weekly_clean[test_mask].copy()
+    ts2["predicted"] = y_pred
+    ts2_agg = ts2.groupby("week")[["weekly_review_count", "predicted"]].mean().reset_index()
+    ax.plot(ts2_agg["week"], ts2_agg["weekly_review_count"], label="Actual", color="steelblue")
+    ax.plot(ts2_agg["week"], ts2_agg["predicted"], label="Predicted", color=color, linestyle="--")
+    ax.set_xlabel("Week of Year (2019)")
+    ax.set_ylabel("Avg Weekly Reviews")
+    ax.set_title(f"{name}: Actual vs Predicted Over Time (2019)")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+fig.tight_layout()
+fig.savefig("plot_timeseries_lr_rf.png", dpi=100)
+plt.close(fig)
+
+print("Saved: plot_timeseries_lr_rf.png")
