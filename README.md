@@ -6,14 +6,18 @@ This project uses the Yelp Open Dataset:
 https://business.yelp.com/data/resources/open-dataset/
 Due to licensing restrictions, the dataset is not included in this repository.
 
-To run this project:
-1. Download the dataset from the link above
-2. Place the following files in the same directory as main.py, ml.py, schema.sql:
-   - yelp_academic_dataset_business.json
-   - yelp_academic_dataset_review.json
-   - open-meteo-philadelphia-weather.csv
-3. Run "python3 main.py" to generate the daily_demand.csv, filtered_pa_weather.csv, restaurants.csv, reviews.csv
-4. Run "sqlite3 cs210_restaurant_demand.db < schema.sql" to generate the features.csv file
-5. Run python3 ml.py to see the findings from the three models and generate ml_results.png, ml_importance_random_forest.png, & ml_importance_xgboost.png
 
-Note: if you download all the files (including csvs), running the code should overwrite the existing csv files
+Steps to Run Project:
+1. Download these files to the same directory
+   - Schema.sql, ml.py, main.py, open-meteo-philadelphia-weather.csv
+   - Note that we used a larger version (5GB file) of the JSON files in our directories that we cannot upload to Codebench or GitHub due to copyright and size restrictions. 
+   - We recommend following the instructions on GitHub to download the full dataset. If you do not want to download the datasets, then you do not need to run main.py, as we will attach the output CSV files from main.py for you to use in schema.sql. 
+   - In this case, download daily_demand.csv, filtered_pa_weather.csv, restaurants.csv, and reviews.csv into the same directory.
+2. Run these commands:
+   - Python3 main.py (if you download the Yelp datasets and run this file)
+   - sqlite3 cs210_restaurant_demand.db < schema.sql
+         - this generated features.csv to be used for ml.py
+   - python3 ml.py,
+
+
+Note: if you download all the files (including csvs), running the code in main.py should overwrite the existing csv files
