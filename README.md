@@ -21,3 +21,6 @@ Steps to Run Project:
 
 
 Note: if you download all the files (including csvs), running the code in main.py should overwrite the existing csv files
+
+Video Link: https://www.youtube.com/watch?v=2hVCkeW24Y8
+Presentation Link: https://docs.google.com/presentation/d/1oSzttgiO4H41CfwS60_tVgxkDLz6IGkUuQfZValNapM/edit?usp=sharing
